@@ -13,11 +13,13 @@ su-c PCH
 ```
 
 ## Usage
+
 Upon running the program, the user will see a menu with options to:
-1. Set FastCharging Current
-2. Set bypass charging
-3. Set the charging temperature limit.
-4. Exit
+
+- [1] Set Fast Charging Current
+- [2] Set Bypass Charging
+- [3] Set Charging Temperature Limit
+- [0] Exit
 
 Follow the prompts to configure the charging settings.
 
