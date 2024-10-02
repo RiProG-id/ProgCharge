@@ -1,7 +1,7 @@
 id=PCH
 name=ProgCharge
-version=v1.5
-versionCode=15
+version=v1.5.0
+versionCode=150
 author=@RiProG
 description=ProgCharge is a command-line tool to configure some charging features on supported devices. | su -c PCH
 updateJson=https://raw.githubusercontent.com/RiProG-id/ProgCharge/main/update.json

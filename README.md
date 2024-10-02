@@ -3,7 +3,7 @@ ProgCharge is a command-line tool to configure some charging features on support
 
 ## Installation
 1. **Install Module:**
-Install `ProgCharge.zip` using a root manager app like Magisk, KernelSU, or Apatch.
+Install `PCH.1.5.x.Stable.zip` using a root manager app like Magisk, KernelSU, or Apatch.
 2. **Reboot Device:**
 Reboot your device.
 3. Configure Charging Settings:
