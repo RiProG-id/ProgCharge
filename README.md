@@ -18,21 +18,22 @@ Upon running the program, the user will see a menu with options to:
 2. Set bypass charging
 3. Set the charging temperature limit.
 4. Exit
+
 Follow the prompts to configure the charging settings.
 
 ## Important Note
 Ensure that the default Android fast charging setting is enabled before using ProgCharge. This tool is designed to enhance the existing fast charging functionality.
 
 ## Changelog (v1.0 > v1.5)
-Added temperature limit configuration.
-Implemented Compatibility Check for supported features.
-Enabled auto-cancel of installation if unsupported.
-Split functionality into two methods: ampere and watt.
-Simplified success and error output messages.
-Streamlined interface display.
-Added initial value check at startup.
-Fixed module updater.
-Various bug fixes and improvements.
+- Added temperature limit configuration.
+- Implemented Compatibility Check.
+- Implemented auto-cancel of installation.
+- Split functionality into two methods: ampere and watt.
+- Simplified success and error output messages.
+- Streamlined interface display.
+- Added initial value check at startup.
+- Fixed module updater.
+- Various bug fixes and improvements.
 
 ### More Information
 **Author:**
