@@ -1,7 +1,7 @@
 id=PCH
 name=ProgCharge
-version=v1.0
-versionCode=10
+version=v1.5
+versionCode=15
 author=@RiProG
-description=This program allows users to manage fast charging settings and enable bypass charging for optimal device performance. | su -c PCH
+description=ProgCharge is a command-line tool to configure some charging features on supported devices. | su -c PCH
 updateJson=https://raw.githubusercontent.com/RiProG-id/ProgCharge/main/update.json

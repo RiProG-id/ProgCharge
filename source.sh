@@ -1,194 +1,270 @@
 #!/bin/sh
+current_path=$(ls /sys/class/power_supply/*/constant_charge_current_max /sys/class/power_supply/charger/input_current_limit 2>/dev/null)
+bypass_path=/sys/devices/platform/charger/bypass_charger
+volt_path=/sys/class/power_supply/charger/input_voltage_limit
+temp_path=$(ls /sys/class/power_supply/*/temp_warm 2>/dev/null)
+for path in $current_path $bypass_path $volt_path $temp_path; do
+	chmod +rw "$path"
+done >/dev/null 2>&1
 while true; do
 	clear
 	echo "By RiProG ID"
-	echo "Welcome to ProgCharge"
+	echo "Welcome to ProgCharge."
 	echo ""
-	if ls /sys/class/power_supply/*/constant_charge_current_max 1>/dev/null 2>&1 ||
-		ls /sys/class/power_supply/charger/input_current_limit 1>/dev/null 2>&1; then
-		echo "[1] Set Fast Charging"
+	if [ -n "$current_path" ]; then
+		for path in $current_path; do
+			current_charge=$(cat "$path")
+		done >/dev/null 2>&1
+		if [ -f $volt_path ]; then
+			volt_current=$(cat $volt_path 2>/dev/n)
+			mA_value=$((charge_current / 1000))
+			mV_value=$((volt_current / 1000))
+			mW_value=$((mA_value * mV_value / 1000))
+			W_value=$((mW_value / 1000))
+			echo "MaxCharge current: ${W_value} W"
+		else
+			A_value=$((charge_current / 1000000))
+			A_decimal=$((charge_current / 100000 % 10))
+			if [ "$A_decimal" -ge 5 ]; then
+				echo "MaxCharge current: ${A_value}.5 A"
+			else
+				echo "MaxCharge current: ${A_value}.0 A"
+			fi
+		fi
+		current=true
 	else
-		echo "[1] Set Fast Charging - Not Supported"
+		echo "Charge current: -"
+		current=false
 	fi
-	if [ -f /sys/devices/platform/charger/bypass_charger ]; then
-		echo "[2] Set Bypass Charger"
+	if [ -f $bypass_path ]; then
+		if [ "$(cat $bypass_path 2>/dev/null)" -eq 1 ]; then
+			echo "Bypass Charger: Enabled"
+		else
+			echo "Bypass Charger: Disabled"
+		fi
+		bypass=true
 	else
-		echo "[2] Set Bypass Charger - Not Supported"
+		echo "Bypass Charger: -"
+		bypass=false
 	fi
+	if [ -n "$temp_path" ]; then
+		for path in $temp_path; do
+			temp_current=$(cat "$path")
+		done >/dev/null 2>&1
+		temp_value=$((temp_current / 10))
+		echo "Charge TempLimit: ${temp_value}°C"
+		templimit=true
+	else
+		echo "Charge TempLimit: -"
+		templimit=false
+	fi
+	echo ""
+	echo "[1] Set FastCharging Current"
+	echo "[2] Set Bypass Charging"
+	echo "[3] Set Charging TempLimit"
 	echo "[0] Exit"
 	echo ""
-	echo -n "Select option: "
-	read option
+	printf "Select an option: "
+	read -r option
+	if [ "$option" -eq 1 ]; then
+		if [ $current = false ]; then
+			echo "Not Supported"
+			sleep 2
+			continue
+		fi
+	elif [ "$option" -eq 2 ]; then
+		if [ $bypass = false ]; then
+			echo "Not Supported"
+			sleep 2
+			continue
+		fi
+	elif [ "$option" -eq 3 ]; then
+		if [ "$templimit" = false ]; then
+			echo "Not Supported"
+			sleep 2
+			continue
+		fi
+	fi
 	case "$option" in
 	"1")
-		echo "Current input current:"
-		cat /sys/class/power_supply/charger/input_current_limit
-		echo ""
-		sleep 2
-		echo "Select desired current:"
-		for i in $(seq 1 20); do
-			echo "[$i] $((i * 500))mA"
-		done
-		echo ""
-		sleep 2
-		echo -n "Select desired current: "
-		read current_option
-		case "$current_option" in
-		1)
-			charge_value="500000"
-			voltage_value="4000000"
-			;;
-		2)
-			charge_value="1000000"
-			voltage_value="4500000"
-			;;
-		3)
-			charge_value="1500000"
-			voltage_value="5000000"
-			;;
-		4)
-			charge_value="2000000"
-			voltage_value="5500000"
-			;;
-		5)
-			charge_value="2500000"
-			voltage_value="6000000"
-			;;
-		6)
-			charge_value="3000000"
-			voltage_value="6500000"
-			;;
-		7)
-			charge_value="3500000"
-			voltage_value="7000000"
-			;;
-		8)
-			charge_value="4000000"
-			voltage_value="7500000"
-			;;
-		9)
-			charge_value="4500000"
-			voltage_value="8000000"
-			;;
-		10)
-			charge_value="5000000"
-			voltage_value="8500000"
-			;;
-		11)
-			charge_value="5500000"
-			voltage_value="9000000"
-			;;
-		12)
-			charge_value="6000000"
-			voltage_value="9500000"
-			;;
-		13)
-			charge_value="6500000"
-			voltage_value="10000000"
-			;;
-		14)
-			charge_value="7000000"
-			voltage_value="10500000"
-			;;
-		15)
-			charge_value="7500000"
-			voltage_value="11000000"
-			;;
-		16)
-			charge_value="8000000"
-			voltage_value="11500000"
-			;;
-		17)
-			charge_value="8500000"
-			voltage_value="12000000"
-			;;
-		18)
-			charge_value="9000000"
-			voltage_value="12500000"
-			;;
-		19)
-			charge_value="9500000"
-			voltage_value="13000000"
-			;;
-		20)
-			charge_value="10000000"
-			voltage_value="13500000"
-			;;
-		*)
-			echo "Invalid option."
-			sleep 2
-			continue
-			;;
-		esac
-		echo "Setting charging current to ${charge_value} microamperes..."
-		success=0
-		for path in /sys/class/power_supply/*/constant_charge_current_max /sys/class/power_supply/charger/input_current_limit; do
-			chmod +w "$path"
-			echo "$charge_value" >"$path" 2>/dev/null
-			if [ $? -eq 0 ]; then
-				success=1
+		if [ -f $volt_path ]; then
+			charge_current="3500000"
+			volt_current="5000000"
+			for i in $(seq 1 15); do
+				mA_value=$((charge_current / 1000))
+				mV_value=$((volt_current / 1000))
+				mW_value=$((mA_value * mV_value / 1000))
+				W_value=$((mW_value / 1000))
+				printf "[%2d] %3dW  " "$i" "$W_value"
+				charge_current=$((charge_current + 500000))
+				volt_current=$((volt_current + 500000))
+				if [ $((i % 3)) -eq 0 ]; then
+					echo ""
+				fi
+			done
+			if [ $((15 % 3)) -ne 0 ]; then
+				echo ""
 			fi
-		done
-		if [ "$success" -eq 1 ]; then
-			echo "Charging current successfully set to $charge_value microamperes."
 		else
-			echo "Failed to set charging current."
-		fi
-		sleep 2
-		if [ -f /sys/class/power_supply/charger/input_voltage_limit ]; then
-			echo "Setting input voltage limit to ${voltage_value} microvolts..."
-			chmod +w /sys/class/power_supply/charger/input_voltage_limit
-			echo "$voltage_value" >/sys/class/power_supply/charger/input_voltage_limit 2>/dev/null
-			if [ $? -eq 0 ]; then
-				echo "Input voltage limit successfully changed to ${voltage_value} microvolts."
-			else
-				echo "Failed to set input voltage limit."
+			charge_current="3500000"
+			for i in $(seq 1 15); do
+				A_value=$((charge_current / 1000000))
+				A_decimal=$((charge_current / 100000 % 10))
+				if [ "$A_decimal" -ge 5 ]; then
+					printf "[%2d] %d.5A  " "$i" "$A_value"
+				else
+					printf "[%2d] %d.0A  " "$i" "$A_value"
+				fi
+				charge_current=$((charge_current + 500000))
+				if [ $((i % 3)) -eq 0 ]; then
+					echo ""
+				fi
+			done
+			if [ $((15 % 3)) -ne 0 ]; then
+				echo ""
 			fi
 		fi
-		sleep 2
-		for path in /sys/class/power_supply/*/temp_warm; do
-			chmod +w "$path"
-			echo "500" >"$path" 2>/dev/null
-			if [ $? -eq 0 ]; then
-				echo "Temperature setting successfully changed to 50 Celsius."
-			else
-				echo "Failed to set temperature setting."
+		echo ""
+		charge_current="3500000"
+		volt_current="5000000"
+		while true; do
+			printf "Enter an option (1-15): "
+			read -r option
+			if [ "$option" -lt 1 ] || [ "$option" -gt 15 ]; then
+				echo "Invalid option."
+				sleep 2
+				continue
 			fi
+			for i in $(seq 1 $((option - 1))); do
+				charge_current=$((charge_current + 500000))
+				volt_current=$((volt_current + 500000))
+			done
+			break
 		done
-		sleep 2
+		if [ -f $volt_path ]; then
+			mA_value=$((charge_current / 1000))
+			mV_value=$((volt_current / 1000))
+			mW_value=$((mA_value * mV_value / 1000))
+			W_value=$((mW_value / 1000))
+			printf "Set charge current to %3dW - " "$W_value"
+			success=false
+			for path in $current_path; do
+				if echo "$charge_current" >"$path"; then
+					success=true
+				fi
+			done >/dev/null 2>&1
+			if echo "$volt_current" >$volt_path; then
+				success=true
+			fi >/dev/null 2>&1
+			sleep 5
+			if [ "$success" = true ]; then
+				printf "Success\n"
+			else
+				printf "Failed\n"
+			fi
+			sleep 5
+		else
+			A_value=$((charge_current / 1000000))
+			A_decimal=$((charge_current / 100000 % 10))
+			if [ "$A_decimal" -ge 5 ]; then
+				printf "Set charge current to %d.5A - " "$A_value"
+			else
+				printf "Set charge current to %d.0A - " "$A_value"
+			fi
+			success=false
+			for path in $current_path; do
+				if echo "$charge_current" >"$path"; then
+					success=true
+				fi
+			done >/dev/null 2>&1
+			sleep 5
+			if [ "$success" = true ]; then
+				printf "Success\n"
+			else
+				printf "Failed\n"
+			fi
+		fi
+		sleep 5
 		;;
 	"2")
-		echo -n "Enable Bypass Charger? (type 1 for yes, 0 for no): "
-		read bypass_option
+		echo ""
+		success=false
+		echo "Enable Bypass Charger?:"
+		printf "(type 1 for yes, 0 for no): "
+		read -r bypass_option
 		if [ "$bypass_option" = "1" ]; then
-			echo "Enabling Bypass Charger..."
-			chmod +w /sys/devices/platform/charger/bypass_charger
-			echo "1" >/sys/devices/platform/charger/bypass_charger 2>/dev/null
+			printf "Enabling Bypass Charger - "
+			if echo "1" >$bypass_path; then
+				success=true
+			fi >/dev/null 2>&1
+			sleep 5
+			if [ "$success" = true ]; then
+				printf "Success\n"
+			else
+				printf "Failed\n"
+			fi
 		elif [ "$bypass_option" = "0" ]; then
-			echo "Disabling Bypass Charger..."
-			chmod +w /sys/devices/platform/charger/bypass_charger
-			echo "0" >/sys/devices/platform/charger/bypass_charger 2>/dev/null
+			printf "Disabling Bypass Charger - "
+			if echo "0" >$bypass_path; then
+				success=true
+			fi >/dev/null 2>&1
+			sleep 5
+			if [ "$success" = true ]; then
+				printf "Success\n"
+			else
+				printf "Failed\n"
+			fi
 		else
 			echo "Invalid option."
 			sleep 2
 			continue
 		fi
-		if [ $? -eq 0 ]; then
-			echo "Bypass Charger status successfully changed."
-		else
-			echo "Failed to change Bypass Charger status."
-		fi
-		sleep 2
+		sleep 5
 		;;
-
+	"3")
+		echo ""
+		temp_current=300
+		for index in $(seq 1 6); do
+			i=$((30 + (index - 1) * 5))
+			printf "[%d] %d°C  " "$index" "$i"
+			if [ $((index % 3)) -eq 0 ]; then
+				echo ""
+			fi
+		done
+		printf "Select temperature limit (1-6): "
+		read -r option
+		if [ "$option" -lt 1 ] || [ "$option" -gt 6 ]; then
+			echo "Invalid option."
+			sleep 2
+			continue
+		fi
+		for i in $(seq 1 $((option - 1))); do
+			temp_current=$((temp_current + 50))
+		done
+		temp_value=$((temp_current / 10))
+		printf "Setting temp limit to %s°C - " "$temp_value"
+		success=false
+		for path in $temp_path; do
+			if echo "temp_current" >"$path"; then
+				success=true
+			fi
+		done >/dev/null 2>&1
+		sleep 5
+		if [ "$success" = true ]; then
+			printf "Success\n"
+		else
+			printf "Failed\n"
+		fi
+		break
+		sleep 5
+		;;
 	"0")
-		echo "Exiting... See you next time!"
+		echo "Exiting... Goodbye!"
 		sleep 2
 		exit 0
 		;;
-
 	*)
-		echo "Invalid option. Please try again."
+		echo "Invalid option. Try again."
 		sleep 2
 		;;
 	esac

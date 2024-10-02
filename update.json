@@ -1,6 +1,6 @@
 {
-    "version": "1.0",
-    "versionCode": "10",
-    "zipUrl": "-": "https://github.com/RiProG-id/ProgCharge/releases/download/1.0/PCH.1.0.Initial.zip"
-    "zipUrl": "-": "https://raw.githubusercontent.com/RiProG-id/ProgCharge/refs/heads/main/README.md"
+    "version": "-",
+    "versionCode": "-",
+    "zipUrl": "-",
+    "changelog": "https://raw.githubusercontent.com/RiProG-id/ProgCharge/refs/heads/main/changelog.md"
 }
