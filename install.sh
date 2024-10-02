@@ -22,25 +22,25 @@ ui_print "*                                       *"
 ui_print "*****************************************"
 ui_print ""
 if [ -n "$current_path" ]; then
-	uiprint "FastCharge Config: Supported"
+	ui_print "FastCharge Config: Supported"
 	current=true
 else
-	uiprint "FastCharge Config: Not Supported"
+	ui_print "FastCharge Config: Not Supported"
 fi
 if [ -e "$bypass_path" ]; then
-	uiprint "BypassCharge Config: Supported"
+	ui_print "BypassCharge Config: Supported"
 	bypass=true
 else
-	uiprint "BypassCharge Config: Not Supported"
+	ui_print "BypassCharge Config: Not Supported"
 fi
 if [ -n "$temp_path" ]; then
-	uiprint "TempLimit Config: Supported"
+	ui_print "TempLimit Config: Supported"
 	tempLimit=true
 else
-	uiprint "TempLimit Config: Not Supported"
+	ui_print "TempLimit Config: Not Supported"
 fi
 if [ "$current" = false ] && [ "$bypass" = false ] && [ "$tempLimit" = false ]; then
-	uiprint "All features not supported."
+	ui_print "All features not supported."
 	exit 1
 fi
 sleep 2
