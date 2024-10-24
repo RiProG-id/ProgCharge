@@ -1,7 +1,7 @@
 #!/bin/sh
-current_path=$(ls /sys/class/power_supply/*/constant_charge_current_max /sys/class/power_supply/charger/input_current_limit 2>/dev/null)
+current_path=$(ls /sys/class/power_supply/*/constant_charge_current_max /sys/class/power_supply/*/input_current_limit 2>/dev/null)
 bypass_path=/sys/devices/platform/charger/bypass_charger
-volt_path=/sys/class/power_supply/charger/input_voltage_limit
+volt_path=$(ls /sys/class/power_supply/*/input_voltage_limit 2>/dev/null)
 temp_path=$(ls /sys/class/power_supply/*/temp_warm 2>/dev/null)
 for path in $current_path $bypass_path $volt_path $temp_path; do
 	chmod +rw "$path"
@@ -9,27 +9,45 @@ done >/dev/null 2>&1
 while true; do
 	clear
 	echo "By RiProG ID"
-	echo "Welcome to ProgCharge."
+	echo "Welcome to ProgCharge. 2.0.1 Beta"
 	echo ""
 	if [ -n "$current_path" ]; then
+		max_value=0
 		for path in $current_path; do
-			current_charge=$(cat "$path")
+			charge_current=$(cat "$path")
+			if [ -n "$charge_current" ]; then
+				if [ "$charge_current" -gt "$max_value" ]; then
+					max_value=$charge_current
+				fi
+			fi
 		done >/dev/null 2>&1
-		if [ -f $volt_path ]; then
-			volt_current=$(cat $volt_path 2>/dev/n)
+		charge_current=$max_value
+		if [ -n "$volt_path" ]; then
+			volt_current=$(cat "$volt_path" 2>/dev/null)
+			max_value=0
+			for path in $volt_path; do
+				volt_current=$(cat "$path")
+				if [ -n "$volt_current" ]; then
+					if [ "$volt_current" -gt "$max_value" ]; then
+						max_value=$volt_current
+					fi
+				fi
+			done >/dev/null 2>&1
+			volt_current=$max_value
 			mA_value=$((charge_current / 1000))
 			mV_value=$((volt_current / 1000))
 			mW_value=$((mA_value * mV_value / 1000))
-			W_value=$((mW_value / 1000))
-			echo "MaxCharge current: ${W_value} W"
+			mW_second_digit=$(((mW_value / 10) % 10))
+			if [ "$mW_second_digit" -ge 5 ]; then
+				W_value=$((mW_value / 1000 + 1))
+			else
+				W_value=$((mW_value / 1000))
+			fi
+			echo "Charge current: ${W_value} W"
 		else
 			A_value=$((charge_current / 1000000))
-			A_decimal=$((charge_current / 100000 % 10))
-			if [ "$A_decimal" -ge 5 ]; then
-				echo "MaxCharge current: ${A_value}.5 A"
-			else
-				echo "MaxCharge current: ${A_value}.0 A"
-			fi
+			mA_value=$(((charge_current % 1000000) / 1000))
+			echo "Charge current: $A_value.$(printf "%03d" "$mA_value") mA"
 		fi
 		current=true
 	else
@@ -38,9 +56,9 @@ while true; do
 	fi
 	if [ -f $bypass_path ]; then
 		if [ "$(cat $bypass_path 2>/dev/null)" -eq 1 ]; then
-			echo "Bypass Charger: Enabled"
+			echo "Bypass Charging: Enabled"
 		else
-			echo "Bypass Charger: Disabled"
+			echo "Bypass Charging: Disabled"
 		fi
 		bypass=true
 	else
@@ -48,9 +66,16 @@ while true; do
 		bypass=false
 	fi
 	if [ -n "$temp_path" ]; then
+		max_value=0
 		for path in $temp_path; do
 			temp_current=$(cat "$path")
+			if [ -n "$temp_current" ]; then
+				if [ "$temp_current" -gt "$max_value" ]; then
+					max_value=$temp_current
+				fi
+			fi
 		done >/dev/null 2>&1
+		temp_current=$max_value
 		temp_value=$((temp_current / 10))
 		echo "Charge TempLimit: ${temp_value}°C"
 		templimit=true
@@ -59,7 +84,7 @@ while true; do
 		templimit=false
 	fi
 	echo ""
-	echo "[1] Set FastCharging Current"
+	echo "[1] Set Charging Current"
 	echo "[2] Set Bypass Charging"
 	echo "[3] Set Charging TempLimit"
 	echo "[0] Exit"
@@ -87,65 +112,71 @@ while true; do
 	fi
 	case "$option" in
 	"1")
-		if [ -f $volt_path ]; then
-			charge_current="3500000"
+		if [ -n "$volt_path" ]; then
+			charge_current="2000000"
 			volt_current="5000000"
-			for i in $(seq 1 15); do
+			for i in $(seq 1 30); do
 				mA_value=$((charge_current / 1000))
 				mV_value=$((volt_current / 1000))
 				mW_value=$((mA_value * mV_value / 1000))
-				W_value=$((mW_value / 1000))
+				mW_second_digit=$(((mW_value / 10) % 10))
+				if [ "$mW_second_digit" -ge 5 ]; then
+					W_value=$((mW_value / 1000 + 1))
+				else
+					W_value=$((mW_value / 1000))
+				fi
 				printf "[%2d] %3dW  " "$i" "$W_value"
-				charge_current=$((charge_current + 500000))
+				charge_current=$((charge_current + 250000))
 				volt_current=$((volt_current + 500000))
 				if [ $((i % 3)) -eq 0 ]; then
 					echo ""
 				fi
 			done
-			if [ $((15 % 3)) -ne 0 ]; then
+			if [ $((30 % 3)) -ne 0 ]; then
 				echo ""
 			fi
 		else
-			charge_current="3500000"
-			for i in $(seq 1 15); do
+			charge_current="2000000"
+			for i in $(seq 1 30); do
 				A_value=$((charge_current / 1000000))
-				A_decimal=$((charge_current / 100000 % 10))
-				if [ "$A_decimal" -ge 5 ]; then
-					printf "[%2d] %d.5A  " "$i" "$A_value"
-				else
-					printf "[%2d] %d.0A  " "$i" "$A_value"
-				fi
-				charge_current=$((charge_current + 500000))
+				mA_value=$(((charge_current % 1000000) / 1000))
+				printf "[%2d] %d.%03d mA  " "$i" "$A_value" "$mA_value"
+				charge_current=$((charge_current + 250000))
 				if [ $((i % 3)) -eq 0 ]; then
 					echo ""
 				fi
 			done
-			if [ $((15 % 3)) -ne 0 ]; then
+			if [ $((30 % 3)) -ne 0 ]; then
 				echo ""
 			fi
 		fi
 		echo ""
-		charge_current="3500000"
+		charge_current="2000000"
 		volt_current="5000000"
 		while true; do
-			printf "Enter an option (1-15): "
+			printf "Enter an option (1-30): "
 			read -r option
-			if [ "$option" -lt 1 ] || [ "$option" -gt 15 ]; then
+			if [ "$option" -lt 1 ] || [ "$option" -gt 30 ]; then
 				echo "Invalid option."
 				sleep 2
 				continue
 			fi
 			for i in $(seq 1 $((option - 1))); do
-				charge_current=$((charge_current + 500000))
+				charge_current=$((charge_current + 250000))
 				volt_current=$((volt_current + 500000))
 			done
 			break
 		done
-		if [ -f $volt_path ]; then
+		if [ -n "$volt_path" ]; then
 			mA_value=$((charge_current / 1000))
 			mV_value=$((volt_current / 1000))
 			mW_value=$((mA_value * mV_value / 1000))
-			W_value=$((mW_value / 1000))
+			mW_second_digit=$(((mW_value / 10) % 10))
+			if [ "$mW_second_digit" -ge 5 ]; then
+				W_value=$((mW_value / 1000 + 1))
+			else
+				W_value=$((mW_value / 1000))
+			fi
 			printf "Set charge current to %3dW - " "$W_value"
 			success=false
 			for path in $current_path; do
@@ -153,9 +184,11 @@ while true; do
 					success=true
 				fi
 			done >/dev/null 2>&1
-			if echo "$volt_current" >$volt_path; then
-				success=true
-			fi >/dev/null 2>&1
+			for path in $volt_path; do
+				if echo "$volt_current" >"$path"; then
+					success=true
+				fi
+			done >/dev/null 2>&1
 			sleep 5
 			if [ "$success" = true ]; then
 				printf "Success\n"
@@ -165,12 +198,8 @@ while true; do
 			sleep 5
 		else
 			A_value=$((charge_current / 1000000))
-			A_decimal=$((charge_current / 100000 % 10))
-			if [ "$A_decimal" -ge 5 ]; then
-				printf "Set charge current to %d.5A - " "$A_value"
-			else
-				printf "Set charge current to %d.0A - " "$A_value"
-			fi
+			mA_value=$(((charge_current % 1000000) / 1000))
+			printf "Set charge current to %d.%03d mA - " "$A_value" "$mA_value"
 			success=false
 			for path in $current_path; do
 				if echo "$charge_current" >"$path"; then
@@ -189,11 +218,11 @@ while true; do
 	"2")
 		echo ""
 		success=false
-		echo "Enable Bypass Charger?:"
+		echo "Enable Bypass Charging?:"
 		printf "(type 1 for yes, 0 for no): "
 		read -r bypass_option
 		if [ "$bypass_option" = "1" ]; then
-			printf "Enabling Bypass Charger - "
+			printf "Enabling Bypass Charging - "
 			if echo "1" >$bypass_path; then
 				success=true
 			fi >/dev/null 2>&1
@@ -204,7 +233,7 @@ while true; do
 				printf "Failed\n"
 			fi
 		elif [ "$bypass_option" = "0" ]; then
-			printf "Disabling Bypass Charger - "
+			printf "Disabling Bypass Charging - "
 			if echo "0" >$bypass_path; then
 				success=true
 			fi >/dev/null 2>&1

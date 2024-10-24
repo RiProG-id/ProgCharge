@@ -4,7 +4,7 @@ PROPFILE=false
 POSTFSDATA=false
 LATESTARTSERVICE=false
 REPLACE=""
-current_path=$(ls /sys/class/power_supply/*/constant_charge_current_max /sys/class/power_supply/charger/input_current_limit 2>/dev/null)
+current_path=$(ls /sys/class/power_supply/*/constant_charge_current_max /sys/class/power_supply/*/input_current_limit 2>/dev/null)
 bypass_path=/sys/devices/platform/charger/bypass_charger
 temp_path=$(ls /sys/class/power_supply/*/temp_warm 2>/dev/null)
 current=false
@@ -22,13 +22,13 @@ ui_print "*                                       *"
 ui_print "*****************************************"
 ui_print ""
 if [ -n "$current_path" ]; then
-	ui_print "FastCharge Config: Supported"
+	ui_print "CurrentCharge Config: Supported"
 	current=true
 else
 	ui_print "FastCharge Config: Not Supported"
 fi
 if [ -e "$bypass_path" ]; then
-	ui_print "BypassCharge Config: Supported"
+	ui_print "CurrentCharge Config: Supported"
 	bypass=true
 else
 	ui_print "BypassCharge Config: Not Supported"
