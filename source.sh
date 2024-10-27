@@ -4,12 +4,12 @@ bypass_path=/sys/devices/platform/charger/bypass_charger
 volt_path=$(ls /sys/class/power_supply/*/input_voltage_limit 2>/dev/null)
 temp_path=$(ls /sys/class/power_supply/*/temp_warm 2>/dev/null)
 for path in $current_path $bypass_path $volt_path $temp_path; do
-	chmod +rw "$path"
+	chmod +r "$path"
 done >/dev/null 2>&1
 while true; do
 	clear
 	echo "By RiProG ID"
-	echo "Welcome to ProgCharge. 2.0.1 Beta"
+	echo "Welcome to ProgCharge. 2.1.0 Stable"
 	echo ""
 	if [ -n "$current_path" ]; then
 		max_value=0
@@ -180,14 +180,18 @@ while true; do
 			printf "Set charge current to %3dW - " "$W_value"
 			success=false
 			for path in $current_path; do
+				chmod +w "$path"
 				if echo "$charge_current" >"$path"; then
 					success=true
 				fi
+				chmod -w "$path"
 			done >/dev/null 2>&1
 			for path in $volt_path; do
+				chmod +w "$path"
 				if echo "$volt_current" >"$path"; then
 					success=true
 				fi
+				chmod -w "$path"
 			done >/dev/null 2>&1
 			sleep 5
 			if [ "$success" = true ]; then
@@ -201,11 +205,13 @@ while true; do
 			mA_value=$(((charge_current % 1000000) / 1000))
 			printf "Set charge current to %d.%03d mA - " "$A_value" "$mA_value"
 			success=false
+			chmod +w "$path"
 			for path in $current_path; do
 				if echo "$charge_current" >"$path"; then
 					success=true
 				fi
 			done >/dev/null 2>&1
+			chmod -w "$path"
 			sleep 5
 			if [ "$success" = true ]; then
 				printf "Success\n"
@@ -223,9 +229,11 @@ while true; do
 		read -r bypass_option
 		if [ "$bypass_option" = "1" ]; then
 			printf "Enabling Bypass Charging - "
+			chmod +w "$bypass_path"
 			if echo "1" >$bypass_path; then
 				success=true
 			fi >/dev/null 2>&1
+			chmod -w "$bypass_path"
 			sleep 5
 			if [ "$success" = true ]; then
 				printf "Success\n"
@@ -234,9 +242,11 @@ while true; do
 			fi
 		elif [ "$bypass_option" = "0" ]; then
 			printf "Disabling Bypass Charging - "
+			chmod +w "$bypass_path"
 			if echo "0" >$bypass_path; then
 				success=true
 			fi >/dev/null 2>&1
+			chmod -w "$bypass_path"
 			sleep 5
 			if [ "$success" = true ]; then
 				printf "Success\n"
@@ -273,11 +283,13 @@ while true; do
 		temp_value=$((temp_current / 10))
 		printf "Setting temp limit to %s°C - " "$temp_value"
 		success=false
+		chmod +w "$path"
 		for path in $temp_path; do
 			if echo "temp_current" >"$path"; then
 				success=true
 			fi
 		done >/dev/null 2>&1
+		chmod -w "$path"
 		sleep 5
 		if [ "$success" = true ]; then
 			printf "Success\n"

@@ -3,7 +3,7 @@ ProgCharge is a command-line tool to configure some charging features on support
 
 ## Installation
 1. **Install Module:**
-Install `PCH.2.0.x.Beta.zip` using a root manager app like Magisk, KernelSU, or Apatch.
+Install `PCH.2.1.x.Stable.zip` using a root manager app like Magisk, KernelSU, or Apatch.
 2. **Reboot Device:**
 Reboot your device.
 3. Configure Charging Settings:
@@ -26,12 +26,14 @@ Follow the prompts to configure the charging settings.
 ## Important Note
 Ensure that the default Android fast charging setting is enabled before using ProgCharge. This tool is designed to enhance the existing fast charging functionality.
 
-## Changelog (v1.5 > v2.0)
-- Added new paths to detect charging current and voltage for more devices.
-- Showed maximum values for charging current, voltage, and temperature.
-- Changed display from amperes (A) to watts (W) and milliamperes (mA) with better accuracy.
-- Increased charging current options from 15 to 30 levels.
-- Fixed issues with setting voltage on some devices.
+## Changelog (v1.5 > v2.1)
+- Added paths for detecting charging current and voltage
+- Displayed maximum values for current, voltage, and temperature
+- Changed display from amperes to watts and milliamperes
+- Increased charging current options from 15 to 30
+- Fixed voltage setting issues on some devices
+- Improved permissions with write access only when needed
+- Added voltage check to show "Mode Watts" or "Mode Milliamperes" based on support
 
 ### More Information
 **Author:**
