@@ -9,7 +9,7 @@ done >/dev/null 2>&1
 while true; do
 	clear
 	echo "By RiProG ID"
-	echo "Welcome to ProgCharge. 2.1.1 Stable"
+	echo "Welcome to ProgCharge. 2.1.2 Stable"
 	echo ""
 	if [ -n "$current_path" ]; then
 		max_value=0
