@@ -15,7 +15,7 @@ ProgCharge is a tool designed to configure and optimize charging settings on sup
 
 After opening the WebUI app, users can select the option to:
 
-- **Choose Charging Wattage**
+- **Choose Charging Speed Value**
 
 Alternatively, you can use the WebUI or action button as a shortcut to open the menu and adjust the charging settings quickly. Follow the instructions in the WebUI to adjust charging settings as needed.
 
