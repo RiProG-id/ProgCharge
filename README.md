@@ -5,7 +5,7 @@ ProgCharge is a tool designed to configure and optimize charging settings on sup
 ## Installation
 
 1. **Install Module:**  
-   Install `PCH.3.0.Latest.zip` using a root manager app like Magisk, KernelSU, or Apatch.
+   Install `PCH.3.0.Stable.zip` using a root manager app like Magisk, KernelSU, or Apatch.
 2. **Reboot Device:**  
    Restart your device after installing the module.
 3. **Install WebUI (Optional):**  
