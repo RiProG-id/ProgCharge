@@ -1,6 +1,6 @@
 {
-    "version": "2.1.2 Stable",
-    "versionCode": "212",
-    "zipUrl": "https://raw.githubusercontent.com/RiProG-id/ProgCharge/refs/heads/main/PCH.2.1.x.Stable.zip",
-    "changelog": "https://raw.githubusercontent.com/RiProG-id/ProgCharge/refs/heads/main/README.md"
+  "version": "3.0.0 Stable",
+  "versionCode": "300",
+  "zipUrl": "https://raw.githubusercontent.com/RiProG-id/ProgCharge/refs/heads/main/PCH.3.0.Latest.zip",
+  "changelog": "https://raw.githubusercontent.com/RiProG-id/ProgCharge/refs/heads/main/README.md"
 }

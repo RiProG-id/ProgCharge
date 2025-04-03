@@ -1,45 +1,49 @@
 # ProgCharge
-ProgCharge is a command-line tool to configure some charging features on supported devices.
+
+ProgCharge is a tool designed to configure and optimize charging settings on supported Android devices through a user-friendly WebUI.
 
 ## Installation
-1. **Install Module:**
-Install `PCH.2.1.x.Stable.zip` using a root manager app like Magisk, KernelSU, or Apatch.
-2. **Reboot Device:**
-Reboot your device.
-3. Configure Charging Settings:
-Use the following command to configure charging settings:
-```bash
-su-c PCH
-```
+
+1. **Install Module:**  
+   Install `PCH.3.0.Latest.zip` using a root manager app like Magisk, KernelSU, or Apatch.
+2. **Reboot Device:**  
+   Restart your device after installing the module.
+3. **Install WebUI (Optional):**  
+   Download and install [KsuWebUIStandalone](https://github.com/5ec1cff/KsuWebUIStandalone/releases). This step is optional and only needed if your device supports WebUI. If WebUI is not supported, simply install the app and proceed with the configuration.
 
 ## Usage
 
-Upon running the program, the user will see a menu with options to:
+After opening the WebUI app, users can select the option to:
 
-- [1] Set Charging Current
-- [2] Set Bypass Charging
-- [3] Set Charging Temperature Limit
-- [0] Exit
+- **Choose Charging Wattage**
 
-Follow the prompts to configure the charging settings.
+Alternatively, you can use the WebUI or action button as a shortcut to open the menu and adjust the charging settings quickly. Follow the instructions in the WebUI to adjust charging settings as needed.
 
 ## Important Note
+
 Ensure that the default Android fast charging setting is enabled before using ProgCharge. This tool is designed to enhance the existing fast charging functionality.
 
-## Changelog (v1.5 > v2.1)
-- Added paths for detecting charging current and voltage
-- Displayed maximum values for current, voltage, and temperature
-- Changed display from amperes to watts and milliamperes
-- Increased charging current options from 15 to 30
-- Fixed voltage setting issues on some devices
-- Improved permissions with write access only when needed
-- Added voltage check to show "Mode Watts" or "Mode Milliamperes" based on support
+**Paths Required for Support:**
 
-### More Information
-**Author:**
-[RiProG](https://github.com/RiProG-id)
+One of the following paths must exist on your device to support charging optimization:
 
-**Visit:**
-[Support ME](https://t.me/RiOpSo/2848)
-[Telegram Channel](https://t.me/RiOpSo)
-[Telegram Group](https://t.me/RiOpSoDisc)
+- `/sys/class/power_supply/*/constant_charge_current_max`
+- `/sys/class/power_supply/*/input_current_limit`
+- `/sys/class/power_supply/*/input_voltage_limit`
+
+If one of these paths is available, ProgCharge will be able to configure your device's charging settings.
+
+## Changelog (v2.1 > v3.0)
+
+- Some features removed for simplification
+- New WebUI interface with a more intuitive design
+
+## More Information
+
+**Author:** [RiProG](https://github.com/RiProG-id)
+
+### Visit:
+
+- [Support ME](https://t.me/RiOpSo/2848)
+- [Telegram Channel](https://t.me/RiOpSo)
+- [Telegram Group](https://t.me/RiOpSoDisc)

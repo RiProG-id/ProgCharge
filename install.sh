@@ -4,56 +4,17 @@ PROPFILE=false
 POSTFSDATA=false
 LATESTARTSERVICE=false
 REPLACE=""
-current_path=$(ls /sys/class/power_supply/*/constant_charge_current_max /sys/class/power_supply/*/input_current_limit 2>/dev/null)
-bypass_path=/sys/devices/platform/charger/bypass_charger
-volt_path=$(ls /sys/class/power_supply/*/input_voltage_limit 2>/dev/null)
-temp_path=$(ls /sys/class/power_supply/*/temp_warm 2>/dev/null)
-current=false
-bypass=false
-tempLimit=false
+support_path=$(ls /sys/class/power_supply/*/constant_charge_current_max /sys/class/power_supply/*/input_current_limit /sys/class/power_supply/*/input_voltage_limit 2>/dev/null)
 ui_print ""
-ui_print "*****************************************"
-ui_print "*      RiProG Open Source @RiOpSo       *"
-ui_print "*****************************************"
-ui_print "*                                       *"
-ui_print "*                 Author                *"
-ui_print "*             Muhammad Rizki            *"
-ui_print "* Telegram: @RiProG | Github: RiProG-ID *"
-ui_print "*                                       *"
-ui_print "*****************************************"
+ui_print "Author:"
+ui_print "  Telegram: @RiProG | Channel: @RiOpSo | Group: @RiOpSoDisc"
 ui_print ""
-if [ -n "$current_path" ]; then
-	ui_print "CurrentCharge Config: Supported"
-	if [ -n "$volt_path" ]; then
-		ui_print "Mode: Watts"
-	else
-		ui_print "Mode: Milliamperes"
-	fi
-	current=true
+if [ -n "$support_path" ]; then
+	ui_print " Module: Supported"
 else
-	ui_print "FastCharge Config: Not Supported"
-fi
-if [ -e "$bypass_path" ]; then
-	ui_print "CurrentCharge Config: Supported"
-	bypass=true
-else
-	ui_print "BypassCharge Config: Not Supported"
-fi
-if [ -n "$temp_path" ]; then
-	ui_print "TempLimit Config: Supported"
-	tempLimit=true
-else
-	ui_print "TempLimit Config: Not Supported"
-fi
-if [ "$current" = false ] && [ "$bypass" = false ] && [ "$tempLimit" = false ]; then
-	ui_print "All features not supported."
+	ui_print "Module: Not Supported"
 	exit 1
 fi
-sleep 2
-ui_print "- Extracting module files"
-mkdir -p "$MODPATH/system/bin"
-unzip -p "$ZIPFILE" 'source.sh' >"$MODPATH/system/bin/PCH"
-chmod +x "$MODPATH/system/bin/PCH"
-ui_print ""
-ui_print "su -c PCH | to configure"
-ui_print ""
+unzip -o "$ZIPFILE" 'action.sh' -d "$MODPATH" >&2
+unzip -p "$ZIPFILE" 'source.sh' >"$MODPATH/PCH"
+unzip "$ZIPFILE" webroot/* -d "$MODPATH/" >/dev/null 2>&1
