@@ -11,91 +11,91 @@ case $choice in
 	current_value=2000000
 	voltage_value=5000000
 	W=10
-	A="2.0"
+	mA=2000
 	;;
 2)
 	current_value=2500000
 	voltage_value=5500000
 	W=14
-	A="2.5"
+	mA=2500
 	;;
 3)
 	current_value=3000000
 	voltage_value=6000000
 	W=18
-	A="3.0"
+	mA=3000
 	;;
 4)
 	current_value=3500000
 	voltage_value=6500000
 	W=23
-	A="3.5"
+	mA=3500
 	;;
 5)
 	current_value=4000000
 	voltage_value=7000000
 	W=28
-	A="4.0"
+	mA=4000
 	;;
 6)
 	current_value=4500000
 	voltage_value=7500000
 	W=34
-	A="4.5"
+	mA=4500
 	;;
 7)
 	current_value=5000000
 	voltage_value=8000000
 	W=40
-	A="5.0"
+	mA=5000
 	;;
 8)
 	current_value=5500000
 	voltage_value=8500000
 	W=47
-	A="5.5"
+	mA=5500
 	;;
 9)
 	current_value=6000000
 	voltage_value=9000000
 	W=54
-	A="6.0"
+	mA=6000
 	;;
 10)
 	current_value=6500000
 	voltage_value=9500000
 	W=62
-	A="6.5"
+	mA=6500
 	;;
 11)
 	current_value=7000000
 	voltage_value=10000000
 	W=70
-	A="7.0"
+	mA=7000
 	;;
 12)
 	current_value=7500000
 	voltage_value=10500000
 	W=79
-	A="7.5"
+	mA=7500
 	;;
 13)
 	current_value=8000000
 	voltage_value=11000000
 	W=88
-	A="8.0"
+	mA=8000
 	;;
 14)
 	current_value=8500000
 	voltage_value=11500000
 	W=98
-	A="8.5"
+	mA=8500
 	;;
 15)
 	current_value=9000000
 	voltage_value=12000000
 	W=108
-	A="9.0"
+	mA=9000
 	;;
 *) exit 1 ;;
 esac
@@ -122,5 +122,5 @@ done >/dev/null 2>&1
 if [ "$voltage_supported" = true ]; then
 	su -lp 2000 -c "cmd notification post -S bigtext -t 'Power Selection' 'ProgCharge' 'You selected $W W'" >/dev/null 2>&1
 else
-	su -lp 2000 -c "cmd notification post -S bigtext -t 'Current Selection' 'ProgCharge' 'You selected $A A'" >/dev/null 2>&1
+	su -lp 2000 -c "cmd notification post -S bigtext -t 'Current Selection' 'ProgCharge' 'You selected $mA mA'" >/dev/null 2>&1
 fi
