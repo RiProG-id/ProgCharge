@@ -35,8 +35,9 @@ If one of these paths is available, ProgCharge will be able to configure your de
 
 ## Changelog (v2.1 > v3.0)
 
-- Some features removed for simplification
-- New WebUI interface with a more intuitive design
+- Simplified by removing some features
+- Introduced a new WebUI with a more intuitive design
+- Added a new method for support detection
 
 ## More Information
 

@@ -4,7 +4,12 @@ PROPFILE=false
 POSTFSDATA=false
 LATESTARTSERVICE=false
 REPLACE=""
-support_path=$(ls /sys/class/power_supply/*/constant_charge_current_max /sys/class/power_supply/*/input_current_limit /sys/class/power_supply/*/input_voltage_limit 2>/dev/null)
+support_path=""
+for path in /sys/class/power_supply/*/constant_charge_current_max \
+	/sys/class/power_supply/*/input_current_limit \
+	/sys/class/power_supply/*/input_voltage_limit; do
+	[ -e "$path" ] && support_path="$support_path $path"
+done
 ui_print ""
 ui_print "Author:"
 ui_print "  Telegram: @RiProG | Channel: @RiOpSo | Group: @RiOpSoDisc"
