@@ -30,17 +30,13 @@ body {
   width: 100%;
   max-width: 500px;
   z-index: 1;
+  text-align: center;
 }
 
 h1 {
   font-size: 28px;
   margin-bottom: 20px;
   z-index: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  text-align: center;
 }
 
 .buttons {

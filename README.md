@@ -27,9 +27,14 @@ Ensure that the default Android fast charging setting is enabled before using Pr
 
 One of the following paths must exist on your device to support charging optimization:
 
-- `/sys/class/power_supply/*/constant_charge_current_max`
-- `/sys/class/power_supply/*/input_current_limit`
-- `/sys/class/power_supply/*/input_voltage_limit`
+- /sys/class/power_supply/\*/constant_charge_current
+- /sys/class/power_supply/\*/constant_charge_current_max
+- /sys/class/power_supply/\*/ctm_current_max
+- /sys/class/power_supply/\*/hw_current_max
+- /sys/class/power_supply/\*/input_current_limit
+- /sys/class/power_supply/\*/input_current_max
+- /sys/class/power_supply/\*/input_voltage_limit
+- /sys/class/power_supply/\*/pd_current_max
 
 If one of these paths is available, ProgCharge will be able to configure your device's charging settings.
 
@@ -38,6 +43,7 @@ If one of these paths is available, ProgCharge will be able to configure your de
 - Simplified by removing some features
 - Introduced a new WebUI with a more intuitive design
 - Added a new method for support detection
+  -"Add support for more devices."
 
 ## More Information
 

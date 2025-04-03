@@ -16,7 +16,40 @@ const wattages = {
   15: 108,
 };
 
-const handleWattSelection = (selection) => {
+const amperes = {
+  1: 2000,
+  2: 2500,
+  3: 3000,
+  4: 3500,
+  5: 4000,
+  6: 4500,
+  7: 5000,
+  8: 5500,
+  9: 6000,
+  10: 6500,
+  11: 7000,
+  12: 7500,
+  13: 8000,
+  14: 8500,
+  15: 9000,
+};
+
+const checkVoltagePath = () => {
+  try {
+    const command =
+      'for path in /sys/class/power_supply/*/input_voltage_limit; do echo "Found"; break; done';
+    if (typeof ksu !== "undefined" && typeof ksu.exec === "function") {
+      const result = ksu.exec(command);
+      if (result.stdout.includes("Found")) {
+        displayAmperes();
+      } else {
+        displayWattages();
+      }
+    }
+  } catch (error) {}
+};
+
+const handleSelection = (selection) => {
   const pleaseWaitMessage = document.getElementById("please-wait");
   const buttons = document.querySelectorAll(".watt-button");
 
@@ -36,9 +69,32 @@ const handleWattSelection = (selection) => {
   } catch (error) {}
 };
 
-document.querySelectorAll(".watt-button").forEach((button) => {
-  button.addEventListener("click", () => {
-    const wattage = button.getAttribute("data-watt");
-    handleWattSelection(wattage);
+const displayWattages = () => {
+  const buttonsContainer = document.getElementById("buttons-container");
+  buttonsContainer.innerHTML = "";
+  Object.keys(wattages).forEach((key) => {
+    const button = document.createElement("button");
+    button.classList.add("watt-button");
+    button.textContent = `${wattages[key]}W`;
+    button.setAttribute("data-watt", key);
+    button.addEventListener("click", () => handleSelection(key));
+    buttonsContainer.appendChild(button);
   });
+};
+
+const displayAmperes = () => {
+  const buttonsContainer = document.getElementById("buttons-container");
+  buttonsContainer.innerHTML = "";
+  Object.keys(amperes).forEach((key) => {
+    const button = document.createElement("button");
+    button.classList.add("watt-button");
+    button.textContent = `${amperes[key]}mA`;
+    button.setAttribute("data-watt", key);
+    button.addEventListener("click", () => handleSelection(key));
+    buttonsContainer.appendChild(button);
+  });
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+  checkVoltagePath();
 });
